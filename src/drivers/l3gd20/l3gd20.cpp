@@ -1045,6 +1045,17 @@ L3GD20::measure()
 
 	report.z_raw = raw_report.z;
 
+
+#if defined (CONFIG_ARCH_BOARD_LUCI_V1)
+	int16_t tx = -report.y_raw;
+	int16_t ty = -report.x_raw;
+	int16_t tz = -report.z_raw;
+	report.x_raw = ty;
+	report.y_raw = tx;
+	report.z_raw = tz;
+#endif
+
+
 	report.temperature_raw = raw_report.temp;
 
 	float xraw_f = report.x_raw;

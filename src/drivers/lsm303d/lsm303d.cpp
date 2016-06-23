@@ -1571,6 +1571,16 @@ LSM303D::measure()
 
 	accel_report.timestamp = hrt_absolute_time();
 
+
+#if defined(CONFIG_ARCH_BOARD_LUCI_V1)
+	int16_t tx = raw_accel_report.y;
+	int16_t ty = raw_accel_report.x;
+	int16_t tz = -raw_accel_report.z;
+	raw_accel_report.x = ty;
+	raw_accel_report.y = tx;
+	raw_accel_report.z = tz;
+#endif
+
 	// use the temperature from the last mag reading
 	accel_report.temperature = _last_temperature;
 
@@ -1702,6 +1712,17 @@ LSM303D::mag_measure()
 	 */
 
 	mag_report.timestamp = hrt_absolute_time();
+
+
+#if defined(CONFIG_ARCH_BOARD_LUCI_V1)
+	int16_t tx = raw_mag_report.y;
+	int16_t ty = raw_mag_report.x;
+	int16_t tz = -raw_mag_report.z;
+	raw_mag_report.x = ty;
+	raw_mag_report.y = tx;
+	raw_mag_report.z = tz;
+#endif
+
 
 	mag_report.x_raw = raw_mag_report.x;
 	mag_report.y_raw = raw_mag_report.y;
