@@ -178,6 +178,11 @@ then
 		fi
 
 		if ver hwcmp AEROFC_V1
+        then
+            set USE_IO no
+        fi
+        
+		if ver hwcmp LUCI_V1
 		then
 			set USE_IO no
 		fi
@@ -195,6 +200,13 @@ then
 		# We don't allow changing AUTOSTART as it doesn't work in
 		# other configurations
 		param set SYS_AUTOSTART 4070
+	fi
+
+	# set coprocessor
+	if ver hwcmp LUCI_V1
+	then
+		param set SYS_COMPANION 921600
+		param save
 	fi
 
 	#
@@ -561,6 +573,14 @@ then
 	if ver hwcmp PX4FMU_V1
 	then
 	else
+		# Luci's coprocessor link is on /dev/ttyS4
+		if ver hwcmp LUCI_V1
+		then
+			set MAVLINK_SERIAL "/dev/ttyS4"
+		else
+			set MAVLINK_SERIAL "/dev/ttyS2"
+		fi
+
 		# XXX We need a better way for runtime eval of shell variables,
 		# but this works for now
 		if param compare SYS_COMPANION 10
@@ -682,13 +702,20 @@ then
 	fi
 
 	if ver hwcmp PX4FMU_V4
+    then
+        # Check for flow sensor - as it is a background task, launch it last
+        px4flow start
+    fi
+	
+    if ver hwcmp LUCI_V1
 	then
-		# Check for flow sensor - as it is a background task, launch it last
+		# start optical flow if available
 		px4flow start &
 	fi
 
 	if ver hwcmp MINDPX_V2
 	then
+		# Check for flow sensor - as it is a background task, launch it last
 		px4flow start &
 	fi
 
