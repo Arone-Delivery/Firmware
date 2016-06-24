@@ -227,6 +227,11 @@ then
 	fi
 
 	if ver hwcmp AEROFC_V1
+    then
+        set MIXER_AUX none
+    fi
+	
+    if ver hwcmp LUCI_V1
 	then
 		set MIXER_AUX none
 	fi
