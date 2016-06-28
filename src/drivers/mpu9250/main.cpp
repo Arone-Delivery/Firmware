@@ -168,6 +168,9 @@ start_bus(struct mpu9250_bus_option &bus, enum Rotation rotation, bool external)
 		warnx("%s SPI not available", external ? "External" : "Internal");
 		return false;
 	}
+#else
+		*g_dev_ptr = new MPU9250(PX4_SPI_BUS_SENSORS, path_accel, path_gyro, path_mag, (spi_dev_e)PX4_SPIDEV_MPU, rotation);
+#endif
 
 	device::Device *interface = bus.interface_constructor(bus.busnum, external);
 

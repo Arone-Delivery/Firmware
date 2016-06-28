@@ -448,6 +448,11 @@ then
 				tone_alarm $TUNE_ERR
 			fi
 
+			if ver hwcmp LUCI_V1
+			then
+				set TTYS1_BUSY yes
+			fi
+
 			if ver hwcmp PX4FMU_V1
 			then
 				if [ $FMU_MODE == pwm -o $FMU_MODE == gpio ]
@@ -581,7 +586,7 @@ then
 		# Luci's coprocessor link is on /dev/ttyS4
 		if ver hwcmp LUCI_V1
 		then
-			set MAVLINK_SERIAL "/dev/ttyS4"
+			set MAVLINK_SERIAL "/dev/ttyS3"
 		else
 			set MAVLINK_SERIAL "/dev/ttyS2"
 		fi
