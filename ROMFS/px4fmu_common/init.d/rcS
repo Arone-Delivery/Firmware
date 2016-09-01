@@ -17,6 +17,7 @@ set MODE autostart
 
 set TUNE_ERR ML<<CP4CP4CP4CP4CP4
 set LOG_FILE /fs/microsd/bootlog.txt
+set SD_MOUNTED no
 
 #
 # Try to mount the microSD card.
@@ -26,6 +27,7 @@ if mount -t vfat /dev/mmcsd0 /fs/microsd
 then
 	# Start playing the startup tune
 	tone_alarm start
+	set SD_MOUNTED yes
 else
 	tone_alarm MBAGP
 	if mkfatfs /dev/mmcsd0
@@ -33,6 +35,7 @@ else
 		if mount -t vfat /dev/mmcsd0 /fs/microsd
 		then
 			echo "INFO  [init] MicroSD card formatted"
+			set SD_MOUNTED yes
 		else
 			echo "ERROR [init] Format failed"
 			tone_alarm MNBG
@@ -67,10 +70,16 @@ then
 	#
 	# Load parameters
 	#
-	set PARAM_FILE /fs/microsd/params
+	#set PARAM_FILE /fs/microsd/params
 	if mtd start
 	then
-		set PARAM_FILE /fs/mtd_params
+		if [ $SD_MOUNTED == yes ]
+		then
+			set PARAM_FILE /fs/microsd/params
+		else
+			set PARAM_FILE /fs/mtd_params
+		fi
+#		set PARAM_FILE /fs/mtd_params
 	fi
 
 	param select $PARAM_FILE
