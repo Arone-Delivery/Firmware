@@ -1,0 +1,126 @@
+diff --git a/nuttx/drivers/mtd/ramtron.c b/nuttx/drivers/mtd/ramtron.c
+index 4e32af3..d6d75c8 100644
+--- a/nuttx/drivers/mtd/ramtron.c
++++ b/nuttx/drivers/mtd/ramtron.c
+@@ -37,9 +37,9 @@
+  ************************************************************************************/
+ 
+ /* OPTIONS:
+- *  - additional non-jedec standard device: FM25H20 
++ *  - additional non-jedec standard device: FM25H20
+  *    must be enabled with the CONFIG_RAMTRON_FRAM_NON_JEDEC=y
+- * 
++ *
+  * TODO:
+  *  - add support for sleep
+  *  - add support for faster read FSTRD command
+@@ -245,6 +245,14 @@ static const struct ramtron_parts_s ramtron_parts[] =
+     3,                            /* addr_len */
+     40000000                      /* speed */
+   },
++  {
++   "MB85RS256B",                  /* name */
++   0x05,                         /* id1 */
++   0x09,                         /* id2 */
++   32L*1024L,                   /* size */
++   3,                            /* addr_len */
++   25000000                      /* speed */
++ },
+ #ifdef CONFIG_RAMTRON_FRAM_NON_JEDEC
+   {
+     "FM25H20",                    /* name */
+@@ -358,6 +366,14 @@ static inline int ramtron_readid(struct ramtron_dev_s *priv)
+   for (i = 0; i < 6; i++)
+     {
+       manufacturer = SPI_SEND(priv->dev, RAMTRON_DUMMY);
++
++      /* Fujitsu parts such as MB85RS1MT only have 1-byte for the manufacturer
++       * ID.  The manufacturer code is "0x4".
++       */
++      if (manufacturer == 0x04)
++      {
++        break;
++      }
+     }
+ 
+   memory           = SPI_SEND(priv->dev, RAMTRON_DUMMY);
+@@ -368,13 +384,13 @@ static inline int ramtron_readid(struct ramtron_dev_s *priv)
+ 
+   SPI_SELECT(priv->dev, SPIDEV_FLASH, false);
+   ramtron_unlock(priv->dev);
+-  
++
+   /* Select part from the part list */
+- 
++
+   for (priv->part = ramtron_parts;
+      priv->part->name != NULL && !(priv->part->id1 == capacity && priv->part->id2 == part);
+      priv->part++);
+-     
++
+   if (priv->part->name)
+     {
+       fvdbg("RAMTRON %s of size %d bytes (mf:%02x mem:%02x cap:%02x part:%02x)\n",
+@@ -387,7 +403,7 @@ static inline int ramtron_readid(struct ramtron_dev_s *priv)
+       priv->speed       = priv->part->speed;
+       return OK;
+     }
+- 
++
+   fvdbg("RAMTRON device not found\n");
+   return -ENODEV;
+ }
+@@ -407,7 +423,7 @@ static int ramtron_waitwritecomplete(struct ramtron_dev_s *priv)
+   /* Send "Read Status Register (RDSR)" command */
+ 
+   (void)SPI_SEND(priv->dev, RAMTRON_RDSR);
+-  
++
+   /* Loop as long as the memory is busy with a write cycle,
+    * but limit the cycles.
+    *
+@@ -452,7 +468,7 @@ static void ramtron_writeenable(struct ramtron_dev_s *priv)
+   /* Send "Write Enable (WREN)" command */
+ 
+   (void)SPI_SEND(priv->dev, RAMTRON_WREN);
+-  
++
+   /* Deselect the FLASH */
+ 
+   SPI_SELECT(priv->dev, SPIDEV_FLASH, false);
+@@ -466,7 +482,7 @@ static void ramtron_writeenable(struct ramtron_dev_s *priv)
+ static inline void ramtron_sendaddr(const struct ramtron_dev_s *priv, uint32_t addr)
+ {
+   DEBUGASSERT(priv->part->addr_len == 3 || priv->part->addr_len == 2);
+-  
++
+   if (priv->part->addr_len == 3)
+     {
+       (void)SPI_SEND(priv->dev, (addr >> 16) & 0xff);
+@@ -490,7 +506,7 @@ static inline int ramtron_pagewrite(struct ramtron_dev_s *priv, FAR const uint8_
+   /* Enable the write access to the FLASH */
+ 
+   ramtron_writeenable(priv);
+-  
++
+   /* Select this FLASH part */
+ 
+   SPI_SELECT(priv->dev, SPIDEV_FLASH, true);
+@@ -506,7 +522,7 @@ static inline int ramtron_pagewrite(struct ramtron_dev_s *priv, FAR const uint8_
+   /* Then write the specified number of bytes */
+ 
+   SPI_SNDBLOCK(priv->dev, buffer, 1 << priv->pageshift);
+-  
++
+   /* Deselect the FLASH: Chip Select high */
+ 
+   SPI_SELECT(priv->dev, SPIDEV_FLASH, false);
+@@ -692,7 +708,7 @@ static int ramtron_ioctl(FAR struct mtd_dev_s *dev, int cmd, unsigned long arg)
+         }
+         break;
+       }
+- 
++
+       case MTDIOC_XIPBASE:
+       default:
+         ret = -ENOTTY; /* Bad command */
