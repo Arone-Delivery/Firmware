@@ -47,6 +47,7 @@ set(config_module_list
 	drivers/snapdragon_rc_pwm
 	drivers/lis3mdl
 	drivers/bmp280
+	drivers/pca9685
 
 	#
 	# System commands
