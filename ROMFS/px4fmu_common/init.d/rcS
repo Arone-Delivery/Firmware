@@ -161,6 +161,7 @@ then
 	set USE_IO yes
 
     if ver hwcmp LUCI_V1
+		then
         set MAVLINK_COMPANION_DEVICE /dev/ttyS4
     fi
 
@@ -194,7 +195,7 @@ then
         then
             set USE_IO no
         fi
-        
+
 		if ver hwcmp LUCI_V1
 		then
 			set USE_IO no
@@ -243,11 +244,11 @@ then
 	fi
 
 	if ver hwcmp AEROFC_V1
-    then
-        set MIXER_AUX none
-    fi
-	
-    if ver hwcmp LUCI_V1
+  then
+  	set MIXER_AUX none
+  fi
+
+  if ver hwcmp LUCI_V1
 	then
 		set MIXER_AUX none
 	fi
@@ -739,7 +740,7 @@ then
         # Check for flow sensor - as it is a background task, launch it last
         px4flow start
     fi
-	
+
     if ver hwcmp LUCI_V1
 	then
 		# start optical flow if available
