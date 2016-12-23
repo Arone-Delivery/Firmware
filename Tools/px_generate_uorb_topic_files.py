@@ -151,7 +151,7 @@ def generate_by_template(output_file, template_file, em_globals):
         folder_name = os.path.dirname(output_file)
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
-            
+
         ofile = open(output_file, 'w')
         # todo, reuse interpreter
         interpreter = em.Interpreter(output=ofile, globals=em_globals, options={em.RAW_OPT:True,em.BUFFERED_OPT:True})
@@ -268,7 +268,7 @@ def generate_topics_list_file(msgdir, outputdir, templatedir):
         tl_template_file = os.path.join(templatedir, TOPICS_LIST_TEMPLATE_FILE)
         tl_out_file = os.path.join(outputdir, TOPICS_LIST_TEMPLATE_FILE.replace(".template", ""))
         generate_by_template(tl_out_file, tl_template_file, tl_globals)
-        
+
 def generate_topics_list_file_from_files(files, outputdir, templatedir):
         # generate cpp file with topics list
         filenames = [os.path.basename(p) for p in files if os.path.basename(p).endswith(".msg")]
@@ -279,7 +279,7 @@ def generate_topics_list_file_from_files(files, outputdir, templatedir):
         tl_template_file = os.path.join(templatedir, TOPICS_LIST_TEMPLATE_FILE)
         tl_out_file = os.path.join(outputdir, TOPICS_LIST_TEMPLATE_FILE.replace(".template", ""))
         generate_by_template(tl_out_file, tl_template_file, tl_globals)
-        
+
 if __name__ == "__main__":
         parser = argparse.ArgumentParser(
             description='Convert msg files to uorb headers/sources')

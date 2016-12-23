@@ -160,6 +160,10 @@ then
 	set FAILSAFE none
 	set USE_IO yes
 
+    if ver hwcmp LUCI_V1
+        set MAVLINK_COMPANION_DEVICE /dev/ttyS4
+    fi
+
 	#
 	# Set USE_IO flag
 	#
