@@ -162,7 +162,8 @@ then
 
     if ver hwcmp LUCI_V1
 		then
-        set MAVLINK_COMPANION_DEVICE /dev/ttyS4
+        set MAVLINK_COMPANION_DEVICE /dev/ttyS3
+				set SYS_COMPANION 921600
     fi
 
 	#
